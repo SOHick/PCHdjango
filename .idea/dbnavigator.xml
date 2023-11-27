@@ -143,7 +143,7 @@
       </connection>
       <connection id="6e4282fd-dbc0-49a3-b11f-66377537e539" active="true" signed="true">
         <database>
-          <name value="timetracker@localhost" />
+          <name value="postgres" />
           <description value="" />
           <database-type value="POSTGRES" />
           <config-type value="BASIC" />
