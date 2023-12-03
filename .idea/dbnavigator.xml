@@ -16,7 +16,7 @@
       <console name="db.sqlite3" type="STANDARD" schema="" session="Main" />
     </connection>
     <connection id="6e4282fd-dbc0-49a3-b11f-66377537e539">
-      <console name="timetracker@localhost" type="STANDARD" schema="" session="Main" />
+      <console name="postgres" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
