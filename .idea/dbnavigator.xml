@@ -26,7 +26,23 @@
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="3f533b1d-a96e-4c55-9228-ddbf16c0683b" dataset="db.auth_user" active-filter-id="" />
     <filter-actions connection-id="3f533b1d-a96e-4c55-9228-ddbf16c0683b" dataset="db.auth_group_permissions" active-filter-id="" />
+    <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.auth_user_groups" active-filter-id="EMPTY_FILTER">
+      <filter id="4d9ba86b-15f4-42df-96f2-5969c51896b8" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.auth_user" active-filter-id="EMPTY_FILTER">
+      <filter id="e088824a-c2ee-4ff4-b5f3-3dc7383cbe67" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.django_session" active-filter-id="EMPTY_FILTER">
+      <filter id="77d3eb7a-17f9-44aa-8e84-459e4ca04579" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="session_key" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
