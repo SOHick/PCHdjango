@@ -38,6 +38,11 @@
         <condition column="id" operator="=" value="" active="true" />
       </filter>
     </filter-actions>
+    <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.web_timeslot" active-filter-id="EMPTY_FILTER">
+      <filter id="57a8d20c-c8f0-47e1-b899-2a4c1d8aadf6" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
     <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.django_session" active-filter-id="EMPTY_FILTER">
       <filter id="77d3eb7a-17f9-44aa-8e84-459e4ca04579" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="session_key" operator="=" value="" active="true" />
