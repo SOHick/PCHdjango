@@ -19,6 +19,8 @@
         <small>
               {{ timeslot.start_date }} - {{ timeslot.end_date }}
               <a href="{% url 'time_slots_edit' timeslot.id %}">изменить</a>
+            <a href="{% url 'time_slots_delete' timeslot.id %}">удалить</a>
+
         </small>
 
      </li>

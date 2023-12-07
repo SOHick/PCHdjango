@@ -64,6 +64,11 @@ def time_slot_edit_view(request, id=None):
             return redirect("main")
     return render(request, "web/time_slot_form.html", {"form": form})
 
+def time_slot_delete_view(id):
+    tag = TimeSlot.objects.get(id=id)
+    tag.delete()
+    return redirect('main')
+
 
 def _list_editor_view(request, model_cls, form_cls, template_name, url_name):
     items = model_cls.objects.all()

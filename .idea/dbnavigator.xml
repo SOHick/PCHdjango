@@ -33,6 +33,11 @@
         <condition column="id" operator="=" value="" active="true" />
       </filter>
     </filter-actions>
+    <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.web_holiday" active-filter-id="EMPTY_FILTER">
+      <filter id="04655ffd-b2ba-464a-a202-bff330f6b5da" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
     <filter-actions connection-id="6e4282fd-dbc0-49a3-b11f-66377537e539" dataset="public.auth_user" active-filter-id="EMPTY_FILTER">
       <filter id="e088824a-c2ee-4ff4-b5f3-3dc7383cbe67" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="id" operator="=" value="" active="true" />
