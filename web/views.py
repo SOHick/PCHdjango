@@ -64,7 +64,7 @@ def time_slot_edit_view(request, id=None):
             return redirect("main")
     return render(request, "web/time_slot_form.html", {"form": form})
 
-def time_slot_delete_view(id):
+def time_slot_delete_view(request, id):
     tag = TimeSlot.objects.get(id=id)
     tag.delete()
     return redirect('main')
@@ -85,7 +85,7 @@ def tags_view(request):
     return _list_editor_view(request, TimeSlotTag, TimeSlotTagForm, "tags", "tags")
 
 
-def tags_delete_view(id):
+def tags_delete_view(request, id):
     tag = TimeSlotTag.objects.get(id=id)
     tag.delete()
     return redirect('tags')
@@ -94,7 +94,7 @@ def holidays_view(request):
     return _list_editor_view(request, Holiday, HolidayForm, "holidays", "holidays")
 
 
-def holidays_delete_view(id):
+def holidays_delete_view(request, id):
     holiday = Holiday.objects.get(id=id)
     holiday.delete()
-    return redirect('holiday')
+    return redirect('holidays')
