@@ -2,21 +2,39 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
+from django.core.paginator import Paginator
 
-from web.forms import RegistrationForm, AuthForm, TimeSlotForm, TimeSlotTagForm, HolidayForm
+from web.forms import RegistrationForm, AuthForm, TimeSlotForm, TimeSlotTagForm, HolidayForm, TimeSlotFilterForm
 from web.models import TimeSlot, TimeSlotTag, Holiday
 
 User = get_user_model()
 
+
 @login_required
 def main_view(request):
     timeslots = TimeSlot.objects.filter(user=request.user).order_by('-start_date')
-    print("QUERY",timeslots.query)
+    print("QUERY", timeslots.query)
     current_timeslot = timeslots.filter(end_date__isnull=True).first()
+
+    filter_form = TimeSlotFilterForm(request.GET)
+    filter_form.is_valid()
+    filters = filter_form.cleaned_data
+
+    if filters['search']:
+        timeslots = timeslots.filter(title__icontains=filters['search'])
+
+    total_count = timeslots.count()
+
+    page_number = request.GET.get("page", 1)
+    paginator = Paginator(timeslots, per_page=10)
+
+
     return render(request, "web/main.html", {
         'current_timeslot': current_timeslot,
-        'timeslots': timeslots,
+        'timeslots': paginator.get_page(page_number),
         'form': TimeSlotForm(),
+        'filter_form': filter_form,
+        'total_count': total_count,
     })
 
 
@@ -58,6 +76,7 @@ def logout_view(request):
     logout(request)
     return redirect("main")
 
+
 @login_required
 def time_slot_edit_view(request, id=None):
     timeslot = get_object_or_404(TimeSlot, user=request.user, id=id) if id is not None else None
@@ -69,6 +88,7 @@ def time_slot_edit_view(request, id=None):
             return redirect("main")
     return render(request, "web/time_slot_form.html", {"form": form})
 
+
 @login_required
 def time_slot_stop_view(request, id):
     if request.method == 'POST':
@@ -76,6 +96,7 @@ def time_slot_stop_view(request, id):
         timeslot.end_date = now()
         timeslot.save()
     return redirect('main')
+
 
 @login_required
 def time_slot_delete_view(request, id):
@@ -94,9 +115,11 @@ def _list_editor_view(request, model_cls, form_cls, template_name, url_name):
             return redirect(url_name)
     return render(request, f"web/{template_name}.html", {"items": items, "form": form})
 
+
 @login_required
 def tags_view(request):
     return _list_editor_view(request, TimeSlotTag, TimeSlotTagForm, "tags", "tags")
+
 
 @login_required
 def tags_delete_view(request, id):
@@ -104,9 +127,11 @@ def tags_delete_view(request, id):
     tag.delete()
     return redirect('tags')
 
+
 @login_required
 def holidays_view(request):
     return _list_editor_view(request, Holiday, HolidayForm, "holidays", "holidays")
+
 
 @login_required
 def holidays_delete_view(request, id):

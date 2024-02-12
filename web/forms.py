@@ -69,3 +69,7 @@ class HolidayForm(forms.ModelForm):
             "date": forms.DateTimeInput(attrs={"type": "date"}, format='%Y-%m-%d')
 
         }
+
+
+class TimeSlotFilterForm(forms.Form):
+    search = forms.CharField(widget=forms.TimeInput(attrs={'placeholder': 'Поиск'}), required=False)

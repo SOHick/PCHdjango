@@ -11,6 +11,7 @@ from web.models import TimeSlot, User, TimeSlotTag
 class Command(BaseCommand):
     def handle(self, *args, **options):
         current_date = now()
+
         user = User.objects.first()
         tags = TimeSlotTag.objects.filter(user=user)
 
