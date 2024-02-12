@@ -11,6 +11,7 @@ User = get_user_model()
 @login_required
 def main_view(request):
     timeslots = TimeSlot.objects.filter(user=request.user).order_by('-start_date')
+    print("QUERY",timeslots.query)
     current_timeslot = timeslots.filter(end_date__isnull=True).first()
     return render(request, "web/main.html", {
         'current_timeslot': current_timeslot,
