@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from django.core.paginator import Paginator
@@ -33,7 +34,10 @@ def main_view(request):
         timeslots = timeslots.filter(end_date__lte=filters['end_date'])
 
     total_count = timeslots.count()
-    timeslots = timeslots.prefetch_related("tags").select_related("user")
+    timeslots = timeslots.prefetch_related("tags").select_related("user").annotate(
+        tags_count=Count("tags"),
+        spent_time=F("end_date")-F("start_date")
+    )
 
     page_number = request.GET.get("page", 1)
     paginator = Paginator(timeslots, per_page=1000)
@@ -45,6 +49,11 @@ def main_view(request):
         'filter_form': filter_form,
         'total_count': total_count,
     })
+
+
+@login_required
+def analytics_view(request):
+    return render(request, "web/analytics.html")
 
 
 def registration_view(request):
