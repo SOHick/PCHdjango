@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, F
+from django.db.models import Count, F, Max, Min, Q, Sum
+from django.db.models.functions import TruncDate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from django.core.paginator import Paginator
@@ -36,7 +37,7 @@ def main_view(request):
     total_count = timeslots.count()
     timeslots = timeslots.prefetch_related("tags").select_related("user").annotate(
         tags_count=Count("tags"),
-        spent_time=F("end_date")-F("start_date")
+        spent_time=F("end_date") - F("start_date")
     )
 
     page_number = request.GET.get("page", 1)
@@ -53,7 +54,31 @@ def main_view(request):
 
 @login_required
 def analytics_view(request):
-    return render(request, "web/analytics.html")
+    overall_stat = TimeSlot.objects.aggregate(
+        count=Count("id"),
+        max_date=Max("end_date"),
+        min_date=Min("start_date"),
+    )
+    days_stat = (
+        TimeSlot.objects.exclude(end_date__isnull=True)
+        .annotate(date=TruncDate("start_date"))
+        .values("date")
+        .annotate(
+            count=Count("id"),
+            realtime_count=Count("id", filter=Q(is_realtime=True)),
+            spent_time=Sum(F("end_date") - F("start_date")),
+        )
+        .order_by("-date")
+
+    )
+
+    print(days_stat)
+
+    return render(request, "web/analytics.html", {
+        "overall_stat": overall_stat,
+        "days_stat": days_stat
+
+    })
 
 
 def registration_view(request):
