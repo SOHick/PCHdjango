@@ -17,7 +17,7 @@ User = get_user_model()
 
 @login_required
 def main_view(request):
-    timeslots = TimeSlot.object.filter(user=request.user).order_by('-start_date')
+    timeslots = TimeSlot.objects.filter(user=request.user).order_by('-start_date')
     current_timeslot = timeslots.filter(end_date__isnull=True).first()
 
     filter_form = TimeSlotFilterForm(request.GET)
