@@ -6,8 +6,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from django.core.paginator import Paginator
 
-from web.forms import RegistrationForm, AuthForm, TimeSlotForm, TimeSlotTagForm, HolidayForm, TimeSlotFilterForm
+from web.forms import RegistrationForm, AuthForm, TimeSlotForm, TimeSlotTagForm, HolidayForm, TimeSlotFilterForm, \
+    ImportForm
 from web.models import TimeSlot, TimeSlotTag, Holiday
+from web.services import filter_timeslots, export_timeslots_csv, import_timeslots_from_csv
+from django.http import HttpResponse
 
 User = get_user_model()
 
@@ -15,33 +18,29 @@ User = get_user_model()
 @login_required
 def main_view(request):
     timeslots = TimeSlot.objects.filter(user=request.user).order_by('-start_date')
-    print("QUERY", timeslots.query)
     current_timeslot = timeslots.filter(end_date__isnull=True).first()
 
     filter_form = TimeSlotFilterForm(request.GET)
     filter_form.is_valid()
-    filters = filter_form.cleaned_data
-
-    if filters['search']:
-        timeslots = timeslots.filter(title__icontains=filters['search'])
-
-    if filters['is_realtime'] is not None:
-        timeslots = timeslots.filter(is_realtime=filters['is_realtime'])
-
-    if filters['start_date']:
-        timeslots = timeslots.filter(start_date__gte=filters['start_date'])
-
-    if filters['end_date']:
-        timeslots = timeslots.filter(end_date__lte=filters['end_date'])
+    timeslots = filter_timeslots(timeslots, filter_form.cleaned_data)
 
     total_count = timeslots.count()
-    timeslots = timeslots.prefetch_related("tags").select_related("user").annotate(
-        tags_count=Count("tags"),
-        spent_time=F("end_date") - F("start_date")
+    timeslots = (
+        timeslots.prefetch_related("tags")
+        .select_related("user")
+        .annotate(tags_count=Count("tags"))
+        .annotate_spent_time()
     )
 
     page_number = request.GET.get("page", 1)
-    paginator = Paginator(timeslots, per_page=1000)
+    paginator = Paginator(timeslots, per_page=10)
+
+    if request.GET.get("export") == 'csv':
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={"Content-Disposition": "attachment; filename=timeslots.csv"},
+        )
+        return export_timeslots_csv(timeslots, response)
 
     return render(request, "web/main.html", {
         'current_timeslot': current_timeslot,
@@ -50,6 +49,16 @@ def main_view(request):
         'filter_form': filter_form,
         'total_count': total_count,
     })
+
+
+@login_required
+def import_view(request):
+    if request.method == "POST":
+        form = ImportForm(files=request.FILES)
+        if form.is_valid():
+            import_timeslots_from_csv(form.cleaned_data["file"], request.user.id)
+            return redirect("main")
+    return render(request, "web/import.html", {"form": ImportForm()})
 
 
 @login_required
@@ -71,8 +80,6 @@ def analytics_view(request):
         .order_by("-date")
 
     )
-
-    print(days_stat)
 
     return render(request, "web/analytics.html", {
         "overall_stat": overall_stat,

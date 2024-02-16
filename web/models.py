@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import  F
 from django.utils import timezone
 
 User = get_user_model()
@@ -12,8 +13,17 @@ class TimeSlotTag(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'тег'
+        verbose_name_plural = 'теги'
+
+class TimeSlotQuerySet(models.QuerySet):
+    def annotate_spent_time(self):
+        return self.annotate(spent_time=F("end_date") - F("start_date"))
 
 class TimeSlot(models.Model):
+    object = TimeSlotQuerySet.as_manager()
+
     title = models.CharField(max_length=256, verbose_name='Название')
     start_date = models.DateTimeField(verbose_name='Время начала', default=timezone.now)
     end_date = models.DateTimeField(verbose_name='Время окончания', null=True, blank=True)
@@ -22,6 +32,12 @@ class TimeSlot(models.Model):
     tags = models.ManyToManyField(TimeSlotTag, verbose_name='Теги', blank=True)
     image = models.ImageField(upload_to='time_slots/', null=True, blank=True, verbose_name='Картинка')
 
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'слоты'
+        verbose_name_plural = 'слоты'
 
 class Holiday(models.Model):
     date = models.DateField(verbose_name='Дата')
