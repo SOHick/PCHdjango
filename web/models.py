@@ -22,7 +22,7 @@ class TimeSlotQuerySet(models.QuerySet):
         return self.annotate(spent_time=F("end_date") - F("start_date"))
 
 class TimeSlot(models.Model):
-    object = TimeSlotQuerySet.as_manager()
+    objects = TimeSlotQuerySet.as_manager()
 
     title = models.CharField(max_length=256, verbose_name='Название')
     start_date = models.DateTimeField(verbose_name='Время начала', default=timezone.now)
