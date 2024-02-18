@@ -5,16 +5,18 @@ from django.db.models.functions import TruncDate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from django.core.paginator import Paginator
-
+from django.views.decorators.cache import cache_page
 from web.forms import RegistrationForm, AuthForm, TimeSlotForm, TimeSlotTagForm, HolidayForm, TimeSlotFilterForm, \
     ImportForm
 from web.models import TimeSlot, TimeSlotTag, Holiday
-from web.services import filter_timeslots, export_timeslots_csv, import_timeslots_from_csv
+from web.services import filter_timeslots, export_timeslots_csv, import_timeslots_from_csv, get_stat
 from django.http import HttpResponse
+
 
 User = get_user_model()
 
 
+@cache_page(60)
 @login_required
 def main_view(request):
     timeslots = TimeSlot.objects.filter(user=request.user).order_by('-start_date')
@@ -33,7 +35,7 @@ def main_view(request):
     )
 
     page_number = request.GET.get("page", 1)
-    paginator = Paginator(timeslots, per_page=10)
+    paginator = Paginator(timeslots, per_page=1000)
 
     if request.GET.get("export") == 'csv':
         response = HttpResponse(
@@ -59,6 +61,13 @@ def import_view(request):
             import_timeslots_from_csv(form.cleaned_data["file"], request.user.id)
             return redirect("main")
     return render(request, "web/import.html", {"form": ImportForm()})
+
+
+
+
+@login_required
+def stat_view(request):
+    return render(request, "web/stat.html", {"results": get_stat()})
 
 
 @login_required
